@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Notebook Pro</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 font-sans">
+    <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow">
+        <h1 class="text-3xl font-bold mb-4 text-gray-800">Notebook Pro</h1>
+
+        <!-- Tabs -->
+        <div class="mb-6 flex space-x-4">
+            <button id="yourProjectsTab" class="px-4 py-2 bg-blue-500 text-white rounded">Your Projects</button>
+            <button id="sharedProjectsTab" class="px-4 py-2 bg-gray-300 text-gray-800 rounded">Shared Projects</button>
+        </div>
+
+        <!-- Your Projects Section -->
+        <div id="yourProjectsSection">
+            <h2 class="text-2xl font-semibold mb-2">Add Project</h2>
+            <input type="text" id="projectTitle" placeholder="Project Title" class="border p-2 w-full mb-2 rounded">
+            <textarea id="projectDesc" placeholder="Project Description" class="border p-2 w-full mb-2 rounded"></textarea>
+            <select id="projectCategory" class="border p-2 w-full mb-2 rounded">
+                <option value="current">Current</option>
+                <option value="past">Past</option>
+                <option value="future">Future</option>
+            </select>
+            <select id="projectStatus" class="border p-2 w-full mb-2 rounded">
+                <option value="Planned">Planned</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+            </select>
+            <button onclick="submitProject()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add Project</button>
+
+            <!-- Search & Filter -->
+            <div class="mt-4 mb-2 flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+                <input type="text" id="searchProjects" placeholder="Search projects..." class="border p-2 mb-2 sm:mb-0 rounded w-full sm:w-1/2" oninput="displayProjects()">
+                <select id="filterCategory" class="border p-2 rounded w-full sm:w-1/4" onchange="displayProjects()">
+                    <option value="">All Categories</option>
+                    <option value="current">Current</option>
+                    <option value="past">Past</option>
+                    <option value="future">Future</option>
+                </select>
+            </div>
+
+            <!-- Projects Table -->
+            <h2 class="text-2xl font-semibold mt-6 mb-2">Projects</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border rounded shadow" id="projectsTable">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="py-2 px-4 border">#</th>
+                            <th class="py-2 px-4 border">Title</th>
+                            <th class="py-2 px-4 border">Description</th>
+                            <th class="py-2 px-4 border">Category</th>
+                            <th class="py-2 px-4 border">Status</th>
+                            <th class="py-2 px-4 border">Pinned</th>
+                            <th class="py-2 px-4 border">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="projectsTbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Shared Projects Section -->
+        <div id="sharedProjectsSection" class="hidden">
+            <h2 class="text-2xl font-semibold mb-2">Share Your Project Idea</h2>
+            <input type="text" id="sharedTitle" placeholder="Project Title" class="border p-2 w-full mb-2 rounded">
+            <textarea id="sharedDesc" placeholder="Project Description" class="border p-2 w-full mb-2 rounded"></textarea>
+            <select id="sharedCategory" class="border p-2 w-full mb-2 rounded">
+                <option value="current">Current</option>
+                <option value="past">Past</option>
+                <option value="future">Future</option>
+            </select>
+            <input type="text" id="sharedBy" placeholder="Submitted by (optional)" class="border p-2 w-full mb-2 rounded">
+            <button onclick="submitSharedProject()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Submit Idea</button>
+
+            <!-- Shared Projects Table -->
+            <h2 class="text-2xl font-semibold mt-6 mb-2">Shared Projects</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border rounded shadow" id="sharedTable">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="py-2 px-4 border">#</th>
+                            <th class="py-2 px-4 border">Title</th>
+                            <th class="py-2 px-4 border">Description</th>
+                            <th class="py-2 px-4 border">Category</th>
+                            <th class="py-2 px-4 border">Submitted By</th>
+                            <th class="py-2 px-4 border">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sharedTbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+<script>
+const SECRET_KEY = "MySecret123"; // Change your secret
+
+let projects = [];       
+let sharedProjects = []; 
+
+function loadFromLocalStorage() {
+    projects = JSON.parse(localStorage.getItem("projects")) || [];
+    sharedProjects = JSON.parse(localStorage.getItem("sharedProjects")) || [];
+}
+
+function saveToLocalStorage() {
+    localStorage.setItem("projects", JSON.stringify(projects));
+    localStorage.setItem("sharedProjects", JSON.stringify(sharedProjects));
+}
+
+function checkSecretKey() {
+    const input = prompt("Enter secret key:");
+    if(input !== SECRET_KEY) { alert("Invalid key!"); return false; }
+    return true;
+}
+
+function displayProjects() {
+    const search = document.getElementById("searchProjects").value.toLowerCase();
+    const filter = document.getElementById("filterCategory").value;
+    const tbody = document.getElementById("projectsTbody");
+    tbody.innerHTML = "";
+
+    // Pinned projects first
+    const sortedProjects = [...projects].sort((a,b)=> b.pinned - a.pinned);
+
+    sortedProjects.forEach((p,i)=>{
+        if((p.title.toLowerCase().includes(search) || p.description.toLowerCase().includes(search)) &&
+           (filter === "" || p.category === filter)) {
+            let bgClass = p.category === 'current' ? 'bg-blue-100' : p.category === 'past' ? 'bg-gray-100' : 'bg-green-100';
+            tbody.innerHTML += `
+            <tr class="border-b ${bgClass} hover:bg-gray-200">
+                <td class="py-2 px-4 border">${i+1}</td>
+                <td class="py-2 px-4 border">${p.title}</td>
+                <td class="py-2 px-4 border">${p.description}</td>
+                <td class="py-2 px-4 border capitalize">${p.category}</td>
+                <td class="py-2 px-4 border">${p.status}</td>
+                <td class="py-2 px-4 border text-center">
+                    <button onclick="togglePin(${i})" class="px-2 py-1 rounded ${p.pinned ? 'bg-purple-500 text-white' : 'bg-gray-300 text-gray-800'} hover:bg-purple-600">${p.pinned ? 'Pinned' : 'Pin'}</button>
+                </td>
+                <td class="py-2 px-4 border">
+                    <button onclick="editProject(${i})" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Edit</button>
+                    <button onclick="deleteProject(${i})" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Delete</button>
+                </td>
+            </tr>`;
+        }
+    });
+}
+
+function togglePin(index){
+    if(!checkSecretKey()) return;
+    projects[index].pinned = !projects[index].pinned;
+    saveToLocalStorage();
+    displayProjects();
+}
+
+function submitProject() {
+    const title = document.getElementById("projectTitle").value;
+    const desc = document.getElementById("projectDesc").value;
+    const category = document.getElementById("projectCategory").value;
+    const status = document.getElementById("projectStatus").value;
+    if(!title || !desc) return alert("Enter title and description");
+    if(!checkSecretKey()) return;
+    projects.push({title, description: desc, category, status, pinned:false});
+    saveToLocalStorage();
+    displayProjects();
+    document.getElementById("projectTitle").value = "";
+    document.getElementById("projectDesc").value = "";
+}
+
+function editProject(index){
+    if(!checkSecretKey()) return;
+    const p = projects[index];
+    const newTitle = prompt("Edit Title:", p.title);
+    const newDesc = prompt("Edit Description:", p.description);
+    const newCategory = prompt("Edit Category (current/past/future):", p.category);
+    const newStatus = prompt("Edit Status (Planned/In Progress/Completed):", p.status);
+    if(newTitle && newDesc && newCategory && newStatus){
+        projects[index] = {title:newTitle, description:newDesc, category:newCategory, status:newStatus, pinned:p.pinned};
+        saveToLocalStorage();
+        displayProjects();
+    }
+}
+
+function deleteProject(index){
+    if(!checkSecretKey()) return;
+    if(confirm("Delete this project?")){
+        projects.splice(index,1);
+        saveToLocalStorage();
+        displayProjects();
+    }
+}
+
+// Shared Projects
+function displaySharedProjects() {
+    const tbody = document.getElementById("sharedTbody");
+    tbody.innerHTML = "";
+    sharedProjects.forEach((p, i)=>{
+        tbody.innerHTML += `
+        <tr class="border-b hover:bg-gray-200">
+            <td class="py-2 px-4 border">${i+1}</td>
+            <td class="py-2 px-4 border">${p.title}</td>
+            <td class="py-2 px-4 border">${p.description}</td>
+            <td class="py-2 px-4 border capitalize">${p.category}</td>
+            <td class="py-2 px-4 border">${p.submittedBy || '-'}</td>
+            <td class="py-2 px-4 border">
+                <button onclick="editSharedProject(${i})" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Edit</button>
+                <button onclick="deleteSharedProject(${i})" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Delete</button>
+            </td>
+        </tr>`;
+    });
+}
+
+function submitSharedProject() {
+    const title = document.getElementById("sharedTitle").value;
+    const desc = document.getElementById("sharedDesc").value;
+    const category = document.getElementById("sharedCategory").value;
+    const submittedBy = document.getElementById("sharedBy").value;
+    if(!title || !desc) return alert("Enter title and description");
+    sharedProjects.push({title, description: desc, category, submittedBy});
+    saveToLocalStorage();
+    displaySharedProjects();
+    document.getElementById("sharedTitle").value = "";
+    document.getElementById("sharedDesc").value = "";
+    document.getElementById("sharedBy").value = "";
+}
+
+function editSharedProject(index){
+    if(!checkSecretKey()) return;
+    const p = sharedProjects[index];
+    const newTitle = prompt("Edit Title:", p.title);
+    const newDesc = prompt("Edit Description:", p.description);
+    const newCategory = prompt("Edit Category (current/past/future):", p.category);
+    const newSubmittedBy = prompt("Edit Submitted By:", p.submittedBy || '');
+    if(newTitle && newDesc && newCategory){
+        sharedProjects[index] = {title:newTitle, description:newDesc, category:newCategory, submittedBy:newSubmittedBy};
+        saveToLocalStorage();
+        displaySharedProjects();
+    }
+}
+
+function deleteSharedProject(index){
+    if(!checkSecretKey()) return;
+    if(confirm("Delete this shared project?")){
+        sharedProjects.splice(index,1);
+        saveToLocalStorage();
+        displaySharedProjects();
+    }
+}
+
+// Tabs toggle
+document.getElementById("yourProjectsTab").addEventListener("click", ()=>{
+    document.getElementById("yourProjectsSection").classList.remove("hidden");
+    document.getElementById("sharedProjectsSection").classList.add("hidden");
+});
+document.getElementById("sharedProjectsTab").addEventListener("click", ()=>{
+    document.getElementById("sharedProjectsSection").classList.remove("hidden");
+    document.getElementById("yourProjectsSection").classList.add("hidden");
+});
+
+// Initialize
+loadFromLocalStorage();
+displayProjects();
+displaySharedProjects();
+</script>
+</body>
+</html>
