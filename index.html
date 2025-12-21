@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ideas Hub</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+
+<div class="app-container">
+
+  <h1>Ideas Hub</h1>
+
+  <!-- Tabs -->
+  <div style="display:flex; gap:10px; margin-bottom:16px;">
+    <button id="yourProjectsTab" class="tab active">Your Projects</button>
+    <button id="sharedProjectsTab" class="tab">Shared Projects</button>
+  </div>
+
+  <!-- ========== YOUR PROJECTS ========== -->
+  <div id="yourProjectsSection">
+
+    <h2>Add Project</h2>
+
+    <input id="projectTitle" class="input" placeholder="Project Title">
+    <textarea id="projectDesc" class="input" placeholder="Project Description"></textarea>
+
+    <!-- Live Link -->
+    <input id="projectLink" class="input" placeholder="Live Link (https://...)">
+
+    <select id="projectCategory" class="input">
+      <option value="current">Current</option>
+      <option value="past">Past</option>
+      <option value="future">Future</option>
+    </select>
+
+    <button id="addProjectBtn" class="btn-primary">Add Project</button>
+
+    <!-- Search -->
+    <input id="searchInput" class="input" placeholder="🔍 Search projects...">
+
+    <!-- Projects Table -->
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Category</th>
+          <th>Link</th>
+          <th>Pin</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="projectsTbody"></tbody>
+    </table>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state hidden">
+      <h3>🚀 No projects yet</h3>
+      <p>Turn ideas into reality. Start by adding your first project.</p>
+      <button class="btn-primary" onclick="projectTitle.focus()">
+        Create Your First Project
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ========== SHARED PROJECTS ========== -->
+  <div id="sharedProjectsSection" class="hidden">
+
+    <h2>Share Project Idea</h2>
+
+    <input id="sharedTitle" class="input" placeholder="Title">
+    <textarea id="sharedDesc" class="input" placeholder="Description"></textarea>
+
+    <select id="sharedCategory" class="input">
+      <option value="current">Current</option>
+      <option value="past">Past</option>
+      <option value="future">Future</option>
+    </select>
+
+    <input id="sharedBy" class="input" placeholder="Submitted By">
+
+    <button id="submitSharedBtn" class="btn-primary">Submit Idea</button>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Category</th>
+          <th>By</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="sharedTbody"></tbody>
+    </table>
+
+  </div>
+
+</div>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>
