@@ -1,0 +1,30 @@
+Testing in alivers.tech quiz3 
+And database with that alivers.tech ideas hub name
+And auth with clerk gxoyyyo
+Allow origin, setting, domain, satellite domain , verify
+quiz2 and we can change later 
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBBPc8QOFA7qj0iwuPOv47sgBprDul4WXE",
+  authDomain: "ideas-hub-web-1dbcb.firebaseapp.com",
+  projectId: "ideas-hub-web-1dbcb",
+  storageBucket: "ideas-hub-web-1dbcb.firebasestorage.app",
+  messagingSenderId: "823376758402",
+  appId: "1:823376758402:web:e2114b08c55a46a07d969b",
+  measurementId: "G-DT8RLBFQYG"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+import git, GitHub and other latest feature with profile view and showcase
+  will be add the the future
