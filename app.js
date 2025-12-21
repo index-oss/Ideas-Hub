@@ -13,7 +13,7 @@ import {
 
 /* ========== FIREBASE CONFIG ========== */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "AIzaSyBBPc8QOFA7qj0iwuPOv47sgBprDul4WXE",
   authDomain: "ideas-hub-web-1dbcb.firebaseapp.com",
   projectId: "ideas-hub-web-1dbcb"
 };
@@ -197,6 +197,34 @@ submitSharedBtn.onclick = async () => {
 
   loadSharedProjects();
 };
+
+const pills = document.querySelectorAll('.pill');
+
+pills.forEach(pill => {
+  pill.addEventListener('click', () => {
+    pills.forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    filterCards(pill.dataset.category); // your filter function
+    movePillIndicator();
+  });
+});
+
+// Pill sliding indicator
+const indicator = document.createElement('div');
+indicator.className = 'pill-indicator';
+document.querySelector('.category-pills').appendChild(indicator);
+
+function movePillIndicator() {
+  const active = document.querySelector('.pill.active');
+  indicator.style.width = active.offsetWidth + 'px';
+  indicator.style.left = active.offsetLeft + 'px';
+}
+
+// Initialize position on page load
+movePillIndicator();
+window.addEventListener('resize', movePillIndicator); // recalc on resize
+
+
 
 /* ========== DELETE SHARED ========== */
 window.deleteShared = async id => {
