@@ -1,4 +1,4 @@
-# Ideas Hub (Notebook Pro)
+# Ideas Hub 
 
 Ideas-Hub is a **project showcase and management dashboard** that allows users to add, edit, delete, pin, and track projects in a clean, organized table-based interface. It also supports sharing project ideas with others. Built with **HTML, Tailwind CSS, and vanilla JavaScript**, ProjectPulse is perfect for students, developers, or teams looking to manage ideas efficiently.
 
